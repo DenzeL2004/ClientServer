@@ -36,7 +36,7 @@ void TCP::MakeConnect(int client, int port, const char* ip_addr) {
 std::string TCP::RecvText(int socket) {
     size_t msg_len = 0;
     Recv(socket, &msg_len, sizeof(msg_len), 0);
-
+    
     std::string buffer(msg_len, 0);
 
     size_t read_bytes = 0;

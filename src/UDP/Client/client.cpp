@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "TCPgeneral.hpp"
+#include "UDPgeneral.hpp"
 
 int main(int argc, char* argv[]) {
 
@@ -8,30 +8,31 @@ int main(int argc, char* argv[]) {
         throw std::invalid_argument(std::format("Invalid number of input parameters."));
     }
 
-    int client = CreateClient(SOCK_STREAM);
-    TCP::MakeConnect(client, atoi(argv[1]), argv[2]);
+    int client = CreateClient(SOCK_DGRAM);
 
-    std::cout << "Client connection - success.\n";
-
-    std::cout << "send - send request to server.\n" 
-              << "close - turn off client.\n";
+    struct sockaddr_in server_addr;
+    server_addr.sin_family = AF_INET; 
+	server_addr.sin_port = htons(atoi(argv[1])); 
+	server_addr.sin_addr.s_addr = inet_addr(argv[2]); 
 
     while (true) {
-        std::cout << "Enter command: ";
+
+       std::cout << "Enter command: ";
         
         std::string cmd;
         getline(std::cin, cmd);
 
         if (cmd == "send"){
             std::string request = ScanTerminal();
-            TCP::SendText(client, request.c_str(), request.size());
 
-            std::string reply = TCP::RecvText(client);
+            socklen_t len = sizeof(server_addr); 
+
+            UDP::SendText(client, request.c_str(), request.size(), &server_addr, len);
+
+            std::string reply = UDP::RecvText(client, &server_addr, &len);
             std::cout << "Server reply: " << reply << std::endl;
         }
         else if (cmd == "close"){
-            Send(client, nullptr, 0, 0);
-
             Close(client);
             std::cout << "Client off.\n";
             

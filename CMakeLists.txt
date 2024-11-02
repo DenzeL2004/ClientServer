@@ -8,3 +8,5 @@ add_compile_options(-std=c++20)
 
 add_subdirectory(src/TCP/Server)
 add_subdirectory(src/TCP/Client)
+add_subdirectory(src/UDP/Server)
+add_subdirectory(src/UDP/Client)
